@@ -1,15 +1,24 @@
 package com.simon.util;
 
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
 
 
 public class DBConnection {
 	
+	private static Properties properties = new Properties();
+	
 	static {
-		try {
+		try(InputStream input = DBConnection.class
+				.getClassLoader()
+				.getResourceAsStream("db.properties")) {
+			
+			properties.load(input);
+			
            Class.forName("com.mysql.cj.jdbc.Driver");			
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -17,9 +26,9 @@ public class DBConnection {
 	}
 	
 	public static Connection getConnection() throws SQLException {
-		String url = "jdbc:mysql://localhost:3306/students";
-		String user = "root";
-		String password = "Bsimon@2001";
+		String url = properties.getProperty("db.url");
+		String user = properties.getProperty("db.user");
+		String password = properties.getProperty("db.password");
 		
 		return DriverManager.getConnection(url, user, password);
 	}
